@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cartões - Safari RA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  body{font-family:Arial,sans-serif;margin:20px;color:#111;background:#f5f5f5}
+  h1{text-align:center}
+  .notice{max-width:900px;margin:0 auto 18px;background:white;padding:14px;border-radius:12px}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(280px,1fr));gap:16px;max-width:950px;margin:auto}
+  .card{background:white;border:2px solid #111;border-radius:14px;padding:14px;text-align:center;break-inside:avoid}
+  .marker{width:210px;height:210px;object-fit:contain;margin:6px auto;display:block}
+  .qr{width:128px;height:128px;margin:8px auto}
+  .animal{font-size:24px;font-weight:700;margin:4px}
+  .small{font-size:12px;color:#444;overflow-wrap:anywhere}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  @media print{
+    body{background:white;margin:8mm}
+    .notice{display:none}
+    .grid{gap:8mm}
+    .card{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<h1>Safari em Realidade Aumentada</h1>
+<div class="notice">
+  <b>Como usar:</b> publique esta pasta em HTTPS e abra esta página pelo endereço publicado.
+  Os QR Codes serão gerados automaticamente para o endereço correto.
+  Depois imprima os cartões. No celular, escaneie o QR Code e aponte a câmera para o marcador preto.
+</div>
+<div class="grid" id="grid"></div>
+<script>
+const animals = [
+  ["lion","LEÃO","Observe a juba e o corpo."],
+  ["elephant","ELEFANTE","Observe a tromba e as orelhas."],
+  ["shark","TUBARÃO","Observe as nadadeiras."],
+  ["eagle","ÁGUIA","Observe as asas e o bico."]
+];
+const markerUrl = "https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/data/images/hiro.png";
+const base = new URL("index.html", location.href);
+for (const [key,name,hint] of animals){
+  const card=document.createElement("section");
+  card.className="card";
+  const target=new URL(base);
+  target.searchParams.set("animal",key);
+  card.innerHTML=`
+    <div class="animal">${name}</div>
+    <div>${hint}</div>
+    <img class="marker" src="${markerUrl}" alt="Marcador Hiro para realidade aumentada">
+    <div class="small">1. Escaneie o QR Code &nbsp; 2. Permita a câmera &nbsp; 3. Aponte para o quadrado acima</div>
+    <div class="qr" id="qr-${key}"></div>
+    <div class="small">${target.href}</div>`;
+  document.getElementById("grid").appendChild(card);
+  new QRCode(document.getElementById(`qr-${key}`), {text:target.href,width:128,height:128,correctLevel:QRCode.CorrectLevel.M});
+}
+</script>
+</body>
+</html>
